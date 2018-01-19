@@ -5,6 +5,10 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageProcess_", "ImageProcess_\ImageProcess_.csproj", "{04831D56-5765-4E78-ACE2-DCF2207C2F01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delegate_", "Delegate_\Delegate_.csproj", "{B9C87374-12AD-4322-8820-5965839AC0BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rename_", "Rename_\Rename_.csproj", "{4A47FCE4-887F-49C6-9956-07A4C0BEA9B4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{04831D56-5765-4E78-ACE2-DCF2207C2F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04831D56-5765-4E78-ACE2-DCF2207C2F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04831D56-5765-4E78-ACE2-DCF2207C2F01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9C87374-12AD-4322-8820-5965839AC0BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9C87374-12AD-4322-8820-5965839AC0BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9C87374-12AD-4322-8820-5965839AC0BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9C87374-12AD-4322-8820-5965839AC0BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A47FCE4-887F-49C6-9956-07A4C0BEA9B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A47FCE4-887F-49C6-9956-07A4C0BEA9B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A47FCE4-887F-49C6-9956-07A4C0BEA9B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A47FCE4-887F-49C6-9956-07A4C0BEA9B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
