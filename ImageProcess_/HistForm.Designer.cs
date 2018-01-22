@@ -40,17 +40,18 @@
             this.close.Text = "Close";
             this.close.UseVisualStyleBackColor = true;
             this.close.Click += new System.EventHandler(this.close_Click);
-            this.close.Paint += new System.Windows.Forms.PaintEventHandler(this.close_Paint);
             // 
             // HistForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(451, 330);
+            this.ControlBox = false;
             this.Controls.Add(this.close);
             this.Name = "HistForm";
             this.Text = "HistForm";
             this.Load += new System.EventHandler(this.HistForm_Load);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.HistForm_Paint);
             this.ResumeLayout(false);
 
         }
