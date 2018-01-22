@@ -11,16 +11,19 @@ namespace ImageProcess_
 {
     public partial class Form1 : Form
     {
+        private HighPerfTimer myTimer;
         private string curFileName;
         private Bitmap curBitmap;
         public Form1()
         {
             InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterScreen;
+            myTimer = new HighPerfTimer();
         }
 
         private void Form1_Load_1(object sender, EventArgs e)
         {
-
+            
         }
 
         private void Open_Click(object sender, EventArgs e)
@@ -43,7 +46,7 @@ namespace ImageProcess_
                 {
                     curBitmap = (Bitmap)Image.FromFile(curFileName);
                     //MessageBox.Show(curFileName);
-                    label1.Text += curFileName;
+                    
                     this.Text = curFileName;
                 }
                 catch (Exception exp)
@@ -112,6 +115,7 @@ namespace ImageProcess_
         {
             if (curBitmap != null)
             {
+                myTimer.Start();
                 Color curColor;
                 int ret;
                 for (int i = 0; i < curBitmap.Width; i++)
@@ -123,54 +127,102 @@ namespace ImageProcess_
                         curBitmap.SetPixel(i, j, Color.FromArgb(ret, ret, ret));
                     }
                 }
+                myTimer.Stop();
+                runTime.Text += myTimer.Duration.ToString("####.##") + "ms";
                 Invalidate();
             }
         }
 
         private void memory_Click(object sender, EventArgs e)
         {
-            
+
             //这里因为图像的尺寸是512x512，所以不用考虑未使用的空间
+            //if (curBitmap != null)
+            //{
+            //    Rectangle rect = new Rectangle(0, 0, curBitmap.Width, curBitmap.Height);
+            //    //注意，PixelFormat返回图像的像素格式，颜色值顺序是蓝、绿、红
+            //    System.Drawing.Imaging.BitmapData bmpData = curBitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, curBitmap.PixelFormat);
+            //    IntPtr ptr = bmpData.Scan0;
+            //    int bytes = curBitmap.Width * curBitmap.Height * 3;
+            //    byte[] rgbValues = new byte[bytes];
+            //    System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
+            //    double colorTemp = 0;
+            //    for (int i = 0; i < rgbValues.Length; i += 3)
+            //    {
+            //        colorTemp = rgbValues[i + 2] * 0.299 + rgbValues[i + 1] * 0.587 + rgbValues[i] * 0.114;
+            //        rgbValues[i] = rgbValues[i + 1] = rgbValues[i + 2] = (byte)colorTemp;
+            //    }
+            //    System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
+            //    curBitmap.UnlockBits(bmpData);
+            //    Invalidate();
+            //}
+
+            //这里如果图像尺寸是任意的，
             if (curBitmap != null)
             {
+                myTimer.Start();
                 Rectangle rect = new Rectangle(0, 0, curBitmap.Width, curBitmap.Height);
-                //注意，PixelFormat返回图像的像素格式，颜色值顺序是蓝、绿、红
                 System.Drawing.Imaging.BitmapData bmpData = curBitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, curBitmap.PixelFormat);
                 IntPtr ptr = bmpData.Scan0;
-                int bytes = curBitmap.Width * curBitmap.Height * 3;
+                int bytes = bmpData.Stride * bmpData.Height;
                 byte[] rgbValues = new byte[bytes];
                 System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
                 double colorTemp = 0;
-                for (int i = 0; i < rgbValues.Length; i += 3)
+                for (int i = 0; i < bmpData.Height; i++)
                 {
-                    colorTemp = rgbValues[i + 2] * 0.299 + rgbValues[i + 1] * 0.587 + rgbValues[i] * 0.114;
-                    rgbValues[i] = rgbValues[i + 1] = rgbValues[i + 2] = (byte)colorTemp;
+                    for (int j = 0; j < bmpData.Width * 3; j += 3)
+                    {
+                        int offSet = i * bmpData.Stride + j;
+                        colorTemp = rgbValues[offSet + 2] * 0.299 + rgbValues[offSet + 1] * 0.587 + rgbValues[offSet] * 0.114;
+                        rgbValues[offSet + 2] = rgbValues[offSet + 1] = rgbValues[offSet] = (byte)colorTemp;
+                    }
                 }
                 System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
                 curBitmap.UnlockBits(bmpData);
+                myTimer.Stop();
+                runTime.Text += myTimer.Duration.ToString("####.##") + "ms";
                 Invalidate();
             }
-
-
-            if (curBitmap != null)
-            {
-                 
-            }
-            
         }
 
 
 
         private void pointer_Click(object sender, EventArgs e)
         {
+            if (curBitmap != null)
+            {
+                myTimer.Start();
+                Rectangle rect = new Rectangle(0, 0, curBitmap.Width, curBitmap.Height);
+                System.Drawing.Imaging.BitmapData bmpData = curBitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, curBitmap.PixelFormat);
+                byte temp = 0;
+                unsafe
+                {
+                    byte* ptr = (byte*)(bmpData.Scan0);
+                    for (int i = 0; i < bmpData.Height; i++)
+                    {
+                        for (int j = 0; j < bmpData.Width; j++)
+                        {
+                            temp = (byte)(ptr[2] * 0.299 + ptr[1] * 0.587 + ptr[0] * 0.114);
+                            ptr[2] = ptr[1] = ptr[0] = temp;
+                            ptr += 3;
+                        }
+                        ptr += bmpData.Stride - bmpData.Width * 3;
+                    }
+                }
+                curBitmap.UnlockBits(bmpData);
 
+                myTimer.Stop();
+                runTime.Text += myTimer.Duration.ToString("####.##") + "ms ";
+
+                Invalidate();
+
+            }
         }
 
 
 
         private void normalConvert_Click(object sender, EventArgs e)
         {
-
             if (curBitmap != null)
             {
                 Rectangle rect = new Rectangle(0, 0, curBitmap.Width, curBitmap.Height);
@@ -181,17 +233,30 @@ namespace ImageProcess_
                 byte[] rgbValues = new byte[bytes];
                 System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
                 double colorTemp = 0;
-                for (int i = 0; i < rgbValues.Length; i += 3)
+                for (int i = 0; i < bmpData.Height; i++)
                 {
-                    colorTemp = rgbValues[i + 2] * 0.299 + rgbValues[i + 1] * 0.587 + rgbValues[i] * 0.114;
-                    rgbValues[i] = rgbValues[i + 1] = rgbValues[i + 2] = (byte)colorTemp;
+                    for (int j = 0; j < bmpData.Width * 3; j += 3)
+                    {
+                        int offSet = i * bmpData.Stride + j;
+                        colorTemp = rgbValues[offSet + 2] * 0.299 + rgbValues[offSet + 1] * 0.587 + rgbValues[offSet] * 0.114;
+                        rgbValues[offSet + 2] = rgbValues[offSet + 1] = rgbValues[offSet] = (byte)colorTemp;
+                    }
                 }
-
                 System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
                 curBitmap.UnlockBits(bmpData);
                 Invalidate();
             }
 
+
+        }
+
+        private void histogram_Click(object sender, EventArgs e)
+        {
+            if (curBitmap != null)
+            {
+                HistForm histogram = new HistForm(curBitmap);
+                histogram.ShowDialog();
+            }
         }
     }
 }

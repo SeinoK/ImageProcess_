@@ -31,11 +31,12 @@
             this.Open = new System.Windows.Forms.Button();
             this.Save = new System.Windows.Forms.Button();
             this.Close = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.runTime = new System.Windows.Forms.Label();
             this.pixel = new System.Windows.Forms.Button();
             this.memory = new System.Windows.Forms.Button();
             this.pointer = new System.Windows.Forms.Button();
             this.normalConvert = new System.Windows.Forms.Button();
+            this.histogram = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Open
@@ -68,14 +69,14 @@
             this.Close.UseVisualStyleBackColor = true;
             this.Close.Click += new System.EventHandler(this.Close_Click);
             // 
-            // label1
+            // runTime
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(62, 624);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(58, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "File name: ";
+            this.runTime.AutoSize = true;
+            this.runTime.Location = new System.Drawing.Point(42, 596);
+            this.runTime.Name = "runTime";
+            this.runTime.Size = new System.Drawing.Size(59, 13);
+            this.runTime.TabIndex = 3;
+            this.runTime.Text = "Run Time: ";
             // 
             // pixel
             // 
@@ -117,16 +118,27 @@
             this.normalConvert.UseVisualStyleBackColor = true;
             this.normalConvert.Click += new System.EventHandler(this.normalConvert_Click);
             // 
+            // histogram
+            // 
+            this.histogram.Location = new System.Drawing.Point(45, 422);
+            this.histogram.Name = "histogram";
+            this.histogram.Size = new System.Drawing.Size(99, 23);
+            this.histogram.TabIndex = 8;
+            this.histogram.Text = "Draw Histogram";
+            this.histogram.UseVisualStyleBackColor = true;
+            this.histogram.Click += new System.EventHandler(this.histogram_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 761);
+            this.Controls.Add(this.histogram);
             this.Controls.Add(this.normalConvert);
             this.Controls.Add(this.pointer);
             this.Controls.Add(this.memory);
             this.Controls.Add(this.pixel);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.runTime);
             this.Controls.Add(this.Close);
             this.Controls.Add(this.Save);
             this.Controls.Add(this.Open);
@@ -144,11 +156,12 @@
         private System.Windows.Forms.Button Open;
         private System.Windows.Forms.Button Save;
         private System.Windows.Forms.Button Close;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label runTime;
         private System.Windows.Forms.Button pixel;
         private System.Windows.Forms.Button memory;
         private System.Windows.Forms.Button pointer;
         private System.Windows.Forms.Button normalConvert;
+        private System.Windows.Forms.Button histogram;
     }
 }
 

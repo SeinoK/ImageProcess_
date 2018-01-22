@@ -57,10 +57,6 @@ namespace Rename_
                     Console.WriteLine(f.FullName);
                     //Console.WriteLine(f.Name);
                 }
-
-
-
-
             }
             //获取子文件夹内的文件列表，递归遍历  
             foreach (DirectoryInfo d in dii)

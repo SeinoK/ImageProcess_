@@ -21,6 +21,7 @@ namespace Delegate_
                 Console.WriteLine("又叫老子去打的");
             }
         }
+
         public class Wang
         {
            // public delegate void BuyTicketHandle();
