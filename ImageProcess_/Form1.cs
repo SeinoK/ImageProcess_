@@ -109,6 +109,7 @@ namespace ImageProcess_
         private void Close_Click(object sender, EventArgs e)
         {
             this.Close();
+
         }
 
         private void pixel_Click(object sender, EventArgs e)
