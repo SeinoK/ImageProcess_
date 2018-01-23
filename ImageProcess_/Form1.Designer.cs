@@ -37,6 +37,7 @@
             this.pointer = new System.Windows.Forms.Button();
             this.normalConvert = new System.Windows.Forms.Button();
             this.histogram = new System.Windows.Forms.Button();
+            this.pixelFormat = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // Open
@@ -128,11 +129,21 @@
             this.histogram.UseVisualStyleBackColor = true;
             this.histogram.Click += new System.EventHandler(this.histogram_Click);
             // 
+            // pixelFormat
+            // 
+            this.pixelFormat.AutoSize = true;
+            this.pixelFormat.Location = new System.Drawing.Point(42, 627);
+            this.pixelFormat.Name = "pixelFormat";
+            this.pixelFormat.Size = new System.Drawing.Size(70, 13);
+            this.pixelFormat.TabIndex = 9;
+            this.pixelFormat.Text = "Pixel Format: ";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 761);
+            this.Controls.Add(this.pixelFormat);
             this.Controls.Add(this.histogram);
             this.Controls.Add(this.normalConvert);
             this.Controls.Add(this.pointer);
@@ -162,6 +173,7 @@
         private System.Windows.Forms.Button pointer;
         private System.Windows.Forms.Button normalConvert;
         private System.Windows.Forms.Button histogram;
+        private System.Windows.Forms.Label pixelFormat;
     }
 }
 

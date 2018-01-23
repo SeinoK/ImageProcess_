@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
+using System.Drawing.Imaging;
 
 namespace ImageProcess_
 {
@@ -23,7 +25,7 @@ namespace ImageProcess_
 
         private void Form1_Load_1(object sender, EventArgs e)
         {
-            
+
         }
 
         private void Open_Click(object sender, EventArgs e)
@@ -46,7 +48,7 @@ namespace ImageProcess_
                 {
                     curBitmap = (Bitmap)Image.FromFile(curFileName);
                     //MessageBox.Show(curFileName);
-                    
+
                     this.Text = curFileName;
                 }
                 catch (Exception exp)
@@ -54,7 +56,14 @@ namespace ImageProcess_
                     MessageBox.Show(exp.Message + curFileName);
                 }
             }
+
             Invalidate();
+
+            pixelFormat.Text = "Current format: " + curBitmap.PixelFormat.ToString();
+            if (curBitmap.PixelFormat == System.Drawing.Imaging.PixelFormat.Format24bppRgb)
+            {
+                // MessageBox.Show("The pixel contains 3 channel");
+            }
         }
 
         private void Save_Click(object sender, EventArgs e)
@@ -225,24 +234,54 @@ namespace ImageProcess_
         {
             if (curBitmap != null)
             {
+                //toGrayscale(curBitmap);
+                //grayToNormal(curBitmap);
+
                 Rectangle rect = new Rectangle(0, 0, curBitmap.Width, curBitmap.Height);
-                //注意，PixelFormat返回图像的像素格式，颜色值顺序是红、绿、蓝
-                System.Drawing.Imaging.BitmapData bmpData = curBitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, curBitmap.PixelFormat);
+                BitmapData bmpData = curBitmap.LockBits(rect, ImageLockMode.ReadWrite, curBitmap.PixelFormat);
                 IntPtr ptr = bmpData.Scan0;
-                int bytes = curBitmap.Width * curBitmap.Height * 3;
-                byte[] rgbValues = new byte[bytes];
-                System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
-                double colorTemp = 0;
-                for (int i = 0; i < bmpData.Height; i++)
+                int bytes = bmpData.Stride * bmpData.Height;
+                byte[] rgbValue = new byte[bytes];
+                Marshal.Copy(ptr, rgbValue, 0, bytes);
+                double tempColor = 0;
+                for (int h = 0; h < bmpData.Height; h++)
                 {
-                    for (int j = 0; j < bmpData.Width * 3; j += 3)
+                    for (int w = 0; w < bmpData.Width * 3; w += 3)
                     {
-                        int offSet = i * bmpData.Stride + j;
-                        colorTemp = rgbValues[offSet + 2] * 0.299 + rgbValues[offSet + 1] * 0.587 + rgbValues[offSet] * 0.114;
-                        rgbValues[offSet + 2] = rgbValues[offSet + 1] = rgbValues[offSet] = (byte)colorTemp;
+                        int offSet = h * bmpData.Stride + w;
+
+                        //灰度化当前图像
+                        tempColor = rgbValue[offSet + 2] * 0.299 + rgbValue[offSet + 1] * 0.587 + rgbValue[offSet] * 0.114;
+                        rgbValue[offSet + 2] = rgbValue[offSet + 1] = rgbValue[offSet] = (byte)tempColor;
+                        
+                        //转法线
+                        byte left = rgbValue[w + bmpData.Stride * h + 1];
+                        byte right = rgbValue[w + bmpData.Stride * h + 4];
+                        byte up = rgbValue[w + bmpData.Stride * h + 1];
+                        byte down = rgbValue[w + bmpData.Stride * (h + 2) + 1]; 
+
+                        double horizonVector = (right - left) / 255.0;
+                        double verticalVector = (down - up) / 255.0;
+
+                        double magnitude = Math.Sqrt(horizonVector * horizonVector + verticalVector * verticalVector + 1);
+
+                        double x = horizonVector / magnitude;
+                        double y = verticalVector / magnitude;
+                        double z = 1 / magnitude;
+
+                        x = x / 2 + 0.5;
+                        y = y / 2 + 0.5;
+                        z = z / 2 + 0.5;
+
+                        rgbValue[(w + bmpData.Width * h) * 3] = (byte)z;
+                        rgbValue[(w + bmpData.Width * h + 1) * 3 + 1] = (byte)y;
+                        rgbValue[(w + bmpData.Width * h + 2) * 3 + 2] = (byte)x;
                     }
                 }
-                System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
+
+
+
+                Marshal.Copy(rgbValue, 0, ptr, bytes);
                 curBitmap.UnlockBits(bmpData);
                 Invalidate();
             }
@@ -258,5 +297,84 @@ namespace ImageProcess_
                 histogram.ShowDialog();
             }
         }
+
+        private void toGrayscale(Bitmap bmp)
+        {
+            //使用内存法将图像处理成灰度图
+            //注意，PixelFormat返回图像的像素格式，颜色值顺序是红、绿、蓝
+            //gray = r * 0.299 + g * 0.587 + b * 0.114
+            //MessageBox.Show(bmp.PixelFormat.ToString());
+
+            Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+            BitmapData bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
+            IntPtr ptr = bmpData.Scan0;
+            int bytes = bmpData.Width * bmpData.Height * 3;
+            byte[] rgbValue = new byte[bytes];
+            Marshal.Copy(ptr, rgbValue, 0, bytes);
+            double tempColor = 0;
+            for (int i = 0; i < bmpData.Height; i++)
+            {
+                for (int j = 0; j < bmpData.Width * 3; j += 3)
+                {
+                    int offSet = i * bmpData.Stride + j;
+                    tempColor = rgbValue[offSet + 2] * 0.299 + rgbValue[offSet + 1] * 0.587 + rgbValue[offSet] * 0.114;
+                    rgbValue[offSet + 2] = rgbValue[offSet + 1] = rgbValue[offSet] = (byte)tempColor;
+                }
+            }
+            Marshal.Copy(rgbValue, 0, ptr, bytes);
+            bmp.UnlockBits(bmpData);
+        }
+
+        private void grayToNormal(Bitmap bmp)
+        {
+            Bitmap normal;
+            int depth = 4;
+            Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+            BitmapData bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
+            IntPtr ptr = bmpData.Scan0;
+            byte[] bytes = new byte[bmpData.Stride * bmpData.Height * depth];
+            Marshal.Copy(ptr, bytes, 0, bytes.Length);
+
+            normal = new Bitmap(bmp.Width, bmp.Height, PixelFormat.Format24bppRgb);
+            BitmapData normalData = normal.LockBits(rect, ImageLockMode.ReadWrite, normal.PixelFormat);
+            IntPtr normalPtr = normalData.Scan0;
+            byte[] normalByte = new byte[bmp.Width * bmp.Height * 3];
+            Marshal.Copy(ptr, normalByte, 0, normalByte.Length);
+
+            for (int h = 1; h < bmp.Height - 1; h++)
+            {
+                for (int w = 1; w < bmp.Width - 1; w++)
+                {
+                    byte leftPixel = bytes[(w + bmp.Width * h - 1) * depth + 1];
+                    byte rightPixel = bytes[(w + bmp.Width * h + 1) * depth + 1];
+                    byte upPixel = bytes[w + bmp.Width * (h - 1) * depth + 1];
+                    byte downPixel = bytes[w + bmp.Width * (h + 1) * depth + 1];
+
+                    double horizonVector = (leftPixel - rightPixel) / 255.0;
+                    double verticalVector = (downPixel - upPixel) / 255.0;
+
+                    double magnitude = Math.Sqrt(horizonVector * horizonVector + verticalVector * verticalVector + 1);
+
+                    double x = horizonVector / magnitude;
+                    double y = verticalVector / magnitude;
+                    double z = 1 / magnitude;
+
+                    x = x / 2 + 0.5;
+                    y = y / 2 + 0.5;
+                    z = z / 2 + 0.5;
+
+                    bytes[(w + bmp.Width * h) * 3] = (byte)z;
+                    bytes[(w + bmp.Width * h + 1) * 3 + 1] = (byte)y;
+                    bytes[(w + bmp.Width * h + 2) * 3 + 2] = (byte)x;
+                }
+            }
+            Marshal.Copy(normalByte, 0, normalPtr, normalByte.Length);
+            normal.UnlockBits(normalData);
+            bmp.UnlockBits(bmpData);
+
+            //return normal;
+        }
+
+
     }
 }
