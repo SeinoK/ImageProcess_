@@ -224,11 +224,8 @@ namespace ImageProcess_
                 runTime.Text += myTimer.Duration.ToString("####.##") + "ms ";
 
                 Invalidate();
-
             }
         }
-
-
 
         private void normalConvert_Click(object sender, EventArgs e)
         {
@@ -244,21 +241,33 @@ namespace ImageProcess_
                 byte[] rgbValue = new byte[bytes];
                 Marshal.Copy(ptr, rgbValue, 0, bytes);
                 double tempColor = 0;
+
+                //灰度化当前图像
                 for (int h = 0; h < bmpData.Height; h++)
                 {
                     for (int w = 0; w < bmpData.Width * 3; w += 3)
                     {
                         int offSet = h * bmpData.Stride + w;
-
-                        //灰度化当前图像
                         tempColor = rgbValue[offSet + 2] * 0.299 + rgbValue[offSet + 1] * 0.587 + rgbValue[offSet] * 0.114;
                         rgbValue[offSet + 2] = rgbValue[offSet + 1] = rgbValue[offSet] = (byte)tempColor;
-                        
-                        //转法线
-                        byte left = rgbValue[w + bmpData.Stride * h + 1];
-                        byte right = rgbValue[w + bmpData.Stride * h + 4];
-                        byte up = rgbValue[w + bmpData.Stride * h + 1];
-                        byte down = rgbValue[w + bmpData.Stride * (h + 2) + 1]; 
+                    }
+                }
+
+
+                //转法线
+                for (int h = 1; h < bmpData.Height - 1; h++)
+                {
+                    for (int w = 1; w < bmpData.Width - 1; w++)
+                    {
+                        //byte left = rgbValue[(w + bmpData.Width * h - 1) * 4 + 1];
+                        //byte right = rgbValue[(w + bmpData.Width * h + 1) * 4 + 1];
+                        //byte up = rgbValue[(w + bmpData.Width * (h - 1) + 1) * 4 + 1];
+                        //byte down = rgbValue[(w + bmpData.Width * (h + 1) + 1) * 4 + 1];
+
+                        byte left = rgbValue[(w - 1) * 3 + bmpData.Stride * h];
+                        byte right = rgbValue[(w + 1) * 3 + bmpData.Stride * h];
+                        byte up = rgbValue[w * 3 + bmpData.Stride * (h - 1)];
+                        byte down = rgbValue[w * 3 + bmpData.Stride * (h + 1)];
 
                         double horizonVector = (right - left) / 255.0;
                         double verticalVector = (down - up) / 255.0;
@@ -273,20 +282,26 @@ namespace ImageProcess_
                         y = y / 2 + 0.5;
                         z = z / 2 + 0.5;
 
-                        rgbValue[(w + bmpData.Width * h) * 3] = (byte)z;
-                        rgbValue[(w + bmpData.Width * h + 1) * 3 + 1] = (byte)y;
-                        rgbValue[(w + bmpData.Width * h + 2) * 3 + 2] = (byte)x;
+                        rgbValue[w * 3 + bmpData.Stride * h] = (byte)z;
+                        rgbValue[w * 3 + bmpData.Stride * h + 1] = (byte)y;
+                        rgbValue[w * 3 + bmpData.Stride * h + 2] = (byte)x;
                     }
                 }
 
+                //for (int h = 0; h < bmpData.Height; h++)
+                //{
+                //    for (int w = 0; w < bmpData.Stride - bmpData.Stride % 3; w+=3)
+                //    {
+                        
+                //    }
+                //}
 
+                //MessageBox.Show("Image Width:" + curBitmap.Width.ToString() + "  Image Height:" + curBitmap.Height.ToString() + "  Image Stride:" + bmpData.Stride );
 
                 Marshal.Copy(rgbValue, 0, ptr, bytes);
                 curBitmap.UnlockBits(bmpData);
                 Invalidate();
             }
-
-
         }
 
         private void histogram_Click(object sender, EventArgs e)
