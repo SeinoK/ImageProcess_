@@ -8,6 +8,10 @@ using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
+using AForge;
+using AForge.Video;
+using AForge.Video.DirectShow;
+
 
 namespace ImageProcess_
 {
@@ -16,6 +20,7 @@ namespace ImageProcess_
         private HighPerfTimer myTimer;
         private string curFileName;
         private Bitmap curBitmap;
+        private Bitmap bufferBitmap;
         public Form1()
         {
             InitializeComponent();
@@ -46,9 +51,10 @@ namespace ImageProcess_
                 curFileName = opnDiag.FileName;
                 try
                 {
-                    curBitmap = (Bitmap)Image.FromFile(curFileName);
+                    bufferBitmap = (Bitmap)Image.FromFile(curFileName);
+                    curBitmap = bufferBitmap;
                     //MessageBox.Show(curFileName);
-
+                    pixelFormat.Text = "Current format: " + curBitmap.PixelFormat.ToString();
                     this.Text = curFileName;
                 }
                 catch (Exception exp)
@@ -59,11 +65,11 @@ namespace ImageProcess_
 
             Invalidate();
 
-            pixelFormat.Text = "Current format: " + curBitmap.PixelFormat.ToString();
-            if (curBitmap.PixelFormat == System.Drawing.Imaging.PixelFormat.Format24bppRgb)
-            {
-                // MessageBox.Show("The pixel contains 3 channel");
-            }
+
+            //if (curBitmap.PixelFormat == System.Drawing.Imaging.PixelFormat.Format24bppRgb)
+            //{
+            //    // MessageBox.Show("The pixel contains 3 channel");
+            //}
         }
 
         private void Save_Click(object sender, EventArgs e)
@@ -108,11 +114,11 @@ namespace ImageProcess_
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
-            if (curBitmap != null)
-            {
-                g.DrawImage(curBitmap, 160, 50, curBitmap.Width, curBitmap.Height);
-            }
+            //Graphics g = e.Graphics;
+            //if (curBitmap != null)
+            //{
+            //    g.DrawImage(curBitmap, 160, 50, curBitmap.Width, curBitmap.Height);
+            //}
         }
 
         private void Close_Click(object sender, EventArgs e)
@@ -126,6 +132,7 @@ namespace ImageProcess_
             {
                 myTimer.Start();
                 Color curColor;
+                bufferBitmap = new Bitmap(curBitmap.Width, curBitmap.Height);
                 int ret;
                 for (int i = 0; i < curBitmap.Width; i++)
                 {
@@ -133,7 +140,7 @@ namespace ImageProcess_
                     {
                         curColor = curBitmap.GetPixel(i, j);
                         ret = (int)(curColor.R * 0.299 + curColor.G * 0.587 + curColor.B * 0.114);
-                        curBitmap.SetPixel(i, j, Color.FromArgb(ret, ret, ret));
+                        bufferBitmap.SetPixel(i, j, Color.FromArgb(ret, ret, ret));
                     }
                 }
                 myTimer.Stop();
@@ -171,7 +178,7 @@ namespace ImageProcess_
             {
                 myTimer.Start();
                 Rectangle rect = new Rectangle(0, 0, curBitmap.Width, curBitmap.Height);
-                System.Drawing.Imaging.BitmapData bmpData = curBitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, curBitmap.PixelFormat);
+                BitmapData bmpData = curBitmap.LockBits(rect, ImageLockMode.ReadWrite, curBitmap.PixelFormat);
                 IntPtr ptr = bmpData.Scan0;
                 int bytes = bmpData.Stride * bmpData.Height;
                 byte[] rgbValues = new byte[bytes];
@@ -292,7 +299,7 @@ namespace ImageProcess_
                 //{
                 //    for (int w = 0; w < bmpData.Stride - bmpData.Stride % 3; w+=3)
                 //    {
-                        
+
                 //    }
                 //}
 
@@ -390,6 +397,30 @@ namespace ImageProcess_
             //return normal;
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
 
+        }
+
+        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        {
+            if (bufferBitmap != null)
+            {
+                pictureBox1.Image = bufferBitmap;
+            }
+            Invalidate();
+            //Graphics g = e.Graphics;
+
+            //if (curBitmap != null)
+            //{
+            //    g.DrawImage(curBitmap, 0, 0, curBitmap.Width, curBitmap.Height);
+            //}
+        }
+
+        private void pictureBox2_Paint(object sender, PaintEventArgs e)
+        {
+            pictureBox2.Image = curBitmap;
+            Invalidate();
+        }
     }
 }
