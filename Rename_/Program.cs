@@ -45,18 +45,31 @@ namespace Rename_
                 FileList.Add(f.FullName, size);//添加文件路径到列表中
                 //Console.WriteLine(f.Name);
 
-                if (f.FullName.Contains("主图1") || f.FullName.Contains("主图2") || f.FullName.Contains("主图3") || f.FullName.Contains("主图4") || f.FullName.Contains("主图5"))
+                //if (f.FullName.Contains("主图1") || f.FullName.Contains("主图2") || f.FullName.Contains("主图3") || f.FullName.Contains("主图4") || f.FullName.Contains("主图5"))
+                //{
+
+                //    f.MoveTo(f.FullName.Replace("主图1", "1"));
+                //    f.MoveTo(f.FullName.Replace("主图2", "2"));
+                //    f.MoveTo(f.FullName.Replace("主图3", "3"));
+                //    f.MoveTo(f.FullName.Replace("主图4", "4"));
+                //    f.MoveTo(f.FullName.Replace("主图5", "5"));
+
+                //    Console.WriteLine(f.FullName);
+                //    //Console.WriteLine(f.Name);
+                //}
+
+                if (f.FullName.Contains("详情页"))
                 {
-
-                    f.MoveTo(f.FullName.Replace("主图1", "1"));
-                    f.MoveTo(f.FullName.Replace("主图2", "2"));
-                    f.MoveTo(f.FullName.Replace("主图3", "3"));
-                    f.MoveTo(f.FullName.Replace("主图4", "4"));
-                    f.MoveTo(f.FullName.Replace("主图5", "5"));
-
-                    Console.WriteLine(f.FullName);
-                    //Console.WriteLine(f.Name);
+                    f.MoveTo(f.FullName.Replace("详情页","详情"));
                 }
+
+
+
+
+
+
+
+
             }
             //获取子文件夹内的文件列表，递归遍历  
             foreach (DirectoryInfo d in dii)

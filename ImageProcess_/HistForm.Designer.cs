@@ -33,7 +33,7 @@
             // 
             // close
             // 
-            this.close.Location = new System.Drawing.Point(181, 295);
+            this.close.Location = new System.Drawing.Point(151, 251);
             this.close.Name = "close";
             this.close.Size = new System.Drawing.Size(75, 23);
             this.close.TabIndex = 0;
@@ -45,7 +45,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(451, 330);
+            this.ClientSize = new System.Drawing.Size(378, 286);
             this.Controls.Add(this.close);
             this.Name = "HistForm";
             this.Text = "HistForm";
